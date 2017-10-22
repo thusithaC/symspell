@@ -9,6 +9,7 @@ object Main extends App {
     val dictionary = new SpellingDictionary()
     val words = dictionary.getWords(rows.map(_(1)))
     val errors = new SpellingErrors()
-    println(words.head)
-    println(errors.generateDeletions(words.head, 3).size)
+    val start = System.currentTimeMillis()
+    println(errors.generateDeletions("China High-Speed Railway Technology", 3).size)
+    println(System.currentTimeMillis() - start + "ms")
 }
