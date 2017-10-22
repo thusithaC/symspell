@@ -10,6 +10,6 @@ object Main extends App {
     val words = dictionary.getWords(rows.map(_(1)))
     val errors = new SpellingErrors()
     val start = System.currentTimeMillis()
-    println(errors.generateDeletions("China High-Speed Railway Technology", 3).size)
+    println(errors.generateDeletions("China High-Speed Railway Technology", 4).size)
     println(System.currentTimeMillis() - start + "ms")
 }

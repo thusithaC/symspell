@@ -11,20 +11,19 @@ class SpellingErrors {
     def generateDeletions(word: String, distance: Int): Set[String] = {
         val maxDist = if (distance > word.length) word.length else distance
 
-        def getIterativeDeletions(word: String, distance: Int, accumulator: mutable.Set[String]): Set[String] = {
+        def accumulateDeletions(word: String, distance: Int, accumulator: mutable.Set[String]): Set[String] = {
             for (i <- word.indices) {
                 val deletion = word.patch(i, Nil, 1)
                 if (accumulator.add(deletion) && distance > 1) {
-                    getIterativeDeletions(deletion, distance - 1, accumulator)
+                    accumulateDeletions(deletion, distance - 1, accumulator)
                 }
             }
             accumulator.toSet
         }
 
-        getIterativeDeletions(word, maxDist, new mutable.HashSet[String]())
+        accumulateDeletions(word, maxDist, new mutable.HashSet[String]())
     }
 
-    @Deprecated
     private def getFunctionalDeletions(word: String, distance: Int, accumulator: mutable.Set[String]): Set[String] = {
         def generateSingleDeletions(word: String): Set[String] = {
             word.view.indices.map(pos => word.patch(pos, Nil, 1)).toSet
