@@ -6,10 +6,11 @@ object Main extends App {
     val filename = "data/companies_short_dump.csv"
     val csv = new CSV
     val rows = csv.read(filename)
-    val dictionary = new SpellingDictionary()
-    val words = dictionary.getWords(rows.map(_(1)))
-    val errors = new SpellingErrors()
-    val start = System.currentTimeMillis()
-    println(errors.generateDeletions("China High-Speed Railway Technology", 4).size)
-    println(System.currentTimeMillis() - start + "ms")
+    val words = rows.map(_(1))
+
+    val dictionary = new SpellingDictionary(words, 2)
+    val correction = new SpellingCorrection(dictionary)
+
+    val corrected = correction.correct("China High-Speed Railway Technology Co., Ltd.")
+    println(corrected)
 }
