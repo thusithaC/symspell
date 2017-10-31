@@ -1,8 +1,9 @@
-package de.semkath.symspell
+package de.semkath.symspell.csv
 
 import java.io.Reader
 
 import com.univocity.parsers.csv.{CsvParser, CsvParserSettings}
+import de.semkath.symspell.Rows
 
 import scala.collection.JavaConverters._
 import scala.io.Source

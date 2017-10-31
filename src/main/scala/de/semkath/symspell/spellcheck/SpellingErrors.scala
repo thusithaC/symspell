@@ -1,6 +1,5 @@
-package de.semkath.symspell
+package de.semkath.symspell.spellcheck
 
-import scala.annotation.tailrec
 import scala.collection.mutable
 
 class SpellingErrors {

@@ -1,5 +1,9 @@
 package de.semkath.symspell
 
+import de.semkath.symspell.csv.CSV
+import de.semkath.symspell.spellcheck.{SpellingCorrection, SpellingDictionary}
+import de.semkath.symspell.suffixremoval.SuffixRemoval
+
 import scala.collection.mutable
 
 object Main extends App {
@@ -8,9 +12,7 @@ object Main extends App {
     val rows = csv.read(filename)
     val words = rows.map(_(1))
 
-    val dictionary = new SpellingDictionary(words, 2)
-    val correction = new SpellingCorrection(dictionary)
-
-    val corrected = correction.correct("China High-Speed Railway Technology Co., Ltd.")
-    println(corrected)
+    val removal = new SuffixRemoval
+    val cleaned = removal.removeLegalSuffixes("ETABLISSEMENTS CAZAS (S.A.R.L.)")
+    println(cleaned)
 }

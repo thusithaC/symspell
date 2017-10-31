@@ -1,4 +1,4 @@
-package de.semkath.symspell
+package de.semkath.symspell.spellcheck
 
 class SpellingDictionary(words: Iterable[String], distance: Int) {
     private val errors = new SpellingErrors
@@ -9,6 +9,4 @@ class SpellingDictionary(words: Iterable[String], distance: Int) {
     private def buildDictionary(): Map[String, String] = {
         words.flatMap(word => errors.generateDeletions(word, distance).map(deletion => (deletion, word))).toMap
     }
-
-
 }

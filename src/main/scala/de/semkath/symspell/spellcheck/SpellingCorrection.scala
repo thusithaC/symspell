@@ -1,4 +1,4 @@
-package de.semkath.symspell
+package de.semkath.symspell.spellcheck
 
 class SpellingCorrection(dictionary: SpellingDictionary) {
     def correct(word: String): Option[String] = {
