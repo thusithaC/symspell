@@ -13,6 +13,6 @@ object Main extends App {
     val words = rows.map(_(1))
 
     val removal = new SuffixRemoval
-    val cleaned = removal.removeLegalSuffixes("ETABLISSEMENTS CAZAS (S.A.R.L.)")
+    val cleaned = removal.removeLegalSuffixes("ShenZhen Zero-Seven Co.,limited.")
     println(cleaned)
 }

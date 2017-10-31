@@ -18,18 +18,21 @@ class SuffixRemoval {
 
     def removeLegalSuffixes(companyName: String): String = {
         val cleaned = cleanCompanyName(companyName)
-        shortenLegalSuffixes(cleaned)
+        val shortened = shortenLegalSuffixes(cleaned)
+        shortened.split(" ").filterNot(legalSuffixes.contains).mkString(" ")
     }
 
     private def cleanCompanyName(companyName: String): String = {
         Normalizer.normalize(companyName, Normalizer.Form.NFKD)
             .toLowerCase
             .replaceAll("\\p{general_category=Mn}+", "")
+            .replaceAll("\\.", "")
             .replaceAll("\\p{Punct}", " ")
             .replaceAll("\\s+", " ")
+            .trim
     }
 
-    def shortenLegalSuffixes(companyName: String): String = {
+    private def shortenLegalSuffixes(companyName: String): String = {
         companyName.split(" ").map(token => legalSuffixAbbreviations.getOrElse(token, token)).mkString(" ")
     }
 }
