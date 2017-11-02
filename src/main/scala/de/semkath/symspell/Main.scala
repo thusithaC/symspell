@@ -2,7 +2,7 @@ package de.semkath.symspell
 
 import de.semkath.symspell.csv.CSV
 import de.semkath.symspell.spellcheck.{SpellingCorrection, SpellingDictionary}
-import de.semkath.symspell.suffixremoval.SuffixRemoval
+import de.semkath.symspell.cleaning.{AddressRemoval, SuffixRemoval}
 
 import scala.collection.mutable
 
@@ -12,7 +12,12 @@ object Main extends App {
     val rows = csv.read(filename)
     val words = rows.map(_(1))
 
-    val removal = new SuffixRemoval
-    val cleaned = removal.removeLegalSuffixes("ShenZhen Zero-Seven Co.,limited.")
-    println(cleaned)
+    val address = new AddressRemoval
+    val suffix = new SuffixRemoval
+    val source = "Sunny Wheel Industrial Co. Ltd. Hsiu Shui Hsiang Changhua TW,0053049546TW"
+
+//    val noAddress = address.removeAddresses(source)
+//    val cleaned = suffix.removeLegalSuffixes(noAddress)
+
+    println(suffix.shortenLegalSuffixes("series limited liability company"))
 }

@@ -1,7 +1,8 @@
-package de.semkath.symspell.suffixremoval
+package de.semkath.symspell.cleaning
 
 import java.text.Normalizer
 
+import scala.collection.immutable
 import scala.io.Source
 
 class SuffixRemoval {
@@ -19,7 +20,8 @@ class SuffixRemoval {
     def removeLegalSuffixes(companyName: String): String = {
         val cleaned = cleanCompanyName(companyName)
         val shortened = shortenLegalSuffixes(cleaned)
-        shortened.split(" ").filterNot(legalSuffixes.contains).mkString(" ")
+//        shortened.split(" ").filterNot(legalSuffixes.contains).mkString(" ")
+        ""
     }
 
     private def cleanCompanyName(companyName: String): String = {
@@ -28,11 +30,17 @@ class SuffixRemoval {
             .replaceAll("\\p{general_category=Mn}+", "")
             .replaceAll("\\.", "")
             .replaceAll("\\p{Punct}", " ")
-            .replaceAll("\\s+", " ")
+            .replaceAll(raw"\s+", " ")
             .trim
     }
 
-    private def shortenLegalSuffixes(companyName: String): String = {
-        companyName.split(" ").map(token => legalSuffixAbbreviations.getOrElse(token, token)).mkString(" ")
+    def shortenLegalSuffixes(companyName: String) = {
+        println(getNGrams(companyName).reverse)
+        getNGrams(companyName).reverse.map(token => legalSuffixAbbreviations.getOrElse(token, token))
+    }
+
+    def getNGrams(companyName: String): List[String] = {
+        val tokens = companyName.split(" ")
+        (1 to tokens.length).flatMap(i => tokens.sliding(i).toList.map(_.mkString(" "))).toList
     }
 }
