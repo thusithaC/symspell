@@ -34,13 +34,25 @@ class SuffixRemoval {
             .trim
     }
 
-    def shortenLegalSuffixes(companyName: String) = {
-        println(getNGrams(companyName).reverse)
-        getNGrams(companyName).reverse.map(token => legalSuffixAbbreviations.getOrElse(token, token))
+    def shortenLegalSuffixes(companyName: String): Vector[String] = {
+        getNGrams(companyName)
+            .reverse
+            .map(tokens => (tokens._1, legalSuffixAbbreviations.getOrElse(tokens._2, tokens._2), tokens._3).productIterator.mkString(" "))
     }
 
-    def getNGrams(companyName: String): List[String] = {
+    def getNGrams(companyName: String): Vector[(String, String, String)] = {
         val tokens = companyName.split(" ")
-        (1 to tokens.length).flatMap(i => tokens.sliding(i).toList.map(_.mkString(" "))).toList
+        (1 to tokens.length).flatMap(i => getNGrams(companyName, i)).toVector
+    }
+
+    private def getNGrams(companyName: String, size: Integer): IndexedSeq[(String, String, String)] = {
+        val tokens = companyName.split(" ")
+        for {
+            i <- 0 until tokens.length - (size - 1)
+        } yield (
+            tokens.slice(0, i).mkString(" "),
+            tokens.slice(i, i + size).mkString(" "),
+            tokens.slice(i + size, tokens.length).mkString(" ")
+        )
     }
 }
