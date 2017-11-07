@@ -3,7 +3,7 @@ package de.semkath.symspell.cleaning
 import java.text.Normalizer
 
 import scala.annotation.tailrec
-import scala.collection.{immutable, mutable}
+import scala.collection.mutable
 import scala.io.Source
 
 final class SuffixRemoval {
@@ -21,8 +21,7 @@ final class SuffixRemoval {
     def removeLegalSuffixes(companyName: String): String = {
         val cleaned = cleanCompanyName(companyName)
         val shortened = shortenLegalSuffixes(cleaned)
-//        shortened.split(" ").filterNot(legalSuffixes.contains).mkString(" ")
-        ""
+        shortened.split(" ").filterNot(legalSuffixes.contains).mkString(" ")
     }
 
     private def cleanCompanyName(companyName: String): String = {
@@ -35,7 +34,7 @@ final class SuffixRemoval {
             .trim
     }
 
-    def shortenLegalSuffixes(companyName: String): String = {
+    private def shortenLegalSuffixes(companyName: String): String = {
         val queue = new mutable.Queue[(String, String, String)]()
         queue ++= getNGrams(companyName).reverse
 
@@ -54,9 +53,9 @@ final class SuffixRemoval {
         shortenLegalSuffixes(companyName, queue)
     }
 
-    private def getNGrams(companyName: String): Vector[(String, String, String)] = {
+    private def getNGrams(companyName: String): IndexedSeq[(String, String, String)] = {
         val tokens = companyName.split(" ")
-        (1 to tokens.length).flatMap(i => getNGrams(companyName, i)).toVector
+        (1 to tokens.length).flatMap(i => getNGrams(companyName, i))
     }
 
     private def getNGrams(companyName: String, size: Integer): IndexedSeq[(String, String, String)] = {

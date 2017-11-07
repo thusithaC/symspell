@@ -19,5 +19,5 @@ object Main extends App {
 //    val noAddress = address.removeAddresses(source)
 //    val cleaned = suffix.removeLegalSuffixes(noAddress)
 
-    println(suffix.shortenLegalSuffixes("rose series limited liability company"))
+    println(suffix.removeLegalSuffixes("rose series limited liability company"))
 }
