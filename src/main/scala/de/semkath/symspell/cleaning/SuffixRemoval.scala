@@ -2,10 +2,11 @@ package de.semkath.symspell.cleaning
 
 import java.text.Normalizer
 
-import scala.collection.immutable
+import scala.annotation.tailrec
+import scala.collection.{immutable, mutable}
 import scala.io.Source
 
-class SuffixRemoval {
+final class SuffixRemoval {
     private val legalSuffixes: Set[String] = {
         Source.fromResource("legal_suffixes").getLines().toSet
     }
@@ -30,17 +31,30 @@ class SuffixRemoval {
             .replaceAll("\\p{general_category=Mn}+", "")
             .replaceAll("\\.", "")
             .replaceAll("\\p{Punct}", " ")
-            .replaceAll(raw"\s+", " ")
+            .replaceAll("\\s+", " ")
             .trim
     }
 
-    def shortenLegalSuffixes(companyName: String): Vector[String] = {
-        getNGrams(companyName)
-            .reverse
-            .map(tokens => (tokens._1, legalSuffixAbbreviations.getOrElse(tokens._2, tokens._2), tokens._3).productIterator.mkString(" "))
+    def shortenLegalSuffixes(companyName: String): String = {
+        val queue = new mutable.Queue[(String, String, String)]()
+        queue ++= getNGrams(companyName).reverse
+
+        @tailrec
+        def shortenLegalSuffixes(companyName: String, queue: mutable.Queue[(String, String, String)]): String = {
+            val nGram = queue.dequeue()
+            val shortenedName = List(nGram._1, legalSuffixAbbreviations.getOrElse(nGram._2, nGram._2), nGram._3).mkString(" ").trim
+
+            if (companyName.length >= shortenedName.length) {
+                shortenLegalSuffixes(shortenedName, queue)
+            } else {
+                companyName
+            }
+        }
+
+        shortenLegalSuffixes(companyName, queue)
     }
 
-    def getNGrams(companyName: String): Vector[(String, String, String)] = {
+    private def getNGrams(companyName: String): Vector[(String, String, String)] = {
         val tokens = companyName.split(" ")
         (1 to tokens.length).flatMap(i => getNGrams(companyName, i)).toVector
     }
