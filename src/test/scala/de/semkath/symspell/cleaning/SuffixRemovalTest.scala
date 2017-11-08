@@ -8,7 +8,7 @@ class SuffixRemovalTest extends FlatSpec {
     behavior of "SuffixRemoval"
 
     it should "removeLegalSuffixes" in {
-        val shortened = suffixRemoval.removeLegalSuffixes("rose series limited liability company")
+        val shortened = suffixRemoval.removeLegalSuffixes("rose limited incorporated")
         assert(shortened == "rose")
     }
 

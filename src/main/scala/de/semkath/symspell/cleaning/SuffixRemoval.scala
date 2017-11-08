@@ -43,10 +43,16 @@ final class SuffixRemoval {
             val nGram = queue.dequeue()
             val shortenedName = List(nGram._1, legalSuffixAbbreviations.getOrElse(nGram._2, nGram._2), nGram._3).mkString(" ").trim
 
-            if (companyName.length >= shortenedName.length) {
+            // If the name was successfully shortened, use it to generate new NGrams
+            if (shortenedName.length < companyName.length) {
+                queue.clear
+                queue ++= getNGrams(shortenedName).reverse
+            }
+
+            if (queue.nonEmpty) {
                 shortenLegalSuffixes(shortenedName, queue)
             } else {
-                companyName
+                shortenedName
             }
         }
 
@@ -55,17 +61,16 @@ final class SuffixRemoval {
 
     private def getNGrams(companyName: String): IndexedSeq[(String, String, String)] = {
         val tokens = companyName.split(" ")
-        (1 to tokens.length).flatMap(i => getNGrams(companyName, i))
+        (1 to tokens.length).flatMap(i => getNGrams(tokens, i))
     }
 
-    private def getNGrams(companyName: String, size: Integer): IndexedSeq[(String, String, String)] = {
-        val tokens = companyName.split(" ")
+    private def getNGrams(tokens: Array[String], size: Integer): IndexedSeq[(String, String, String)] = {
         for {
             i <- 0 until tokens.length - (size - 1)
         } yield (
-            tokens.slice(0, i).mkString(" "),
-            tokens.slice(i, i + size).mkString(" "),
-            tokens.slice(i + size, tokens.length).mkString(" ")
+            tokens.view.slice(0, i).mkString(" "),
+            tokens.view.slice(i, i + size).mkString(" "),
+            tokens.view.slice(i + size, tokens.length).mkString(" ")
         )
     }
 }
