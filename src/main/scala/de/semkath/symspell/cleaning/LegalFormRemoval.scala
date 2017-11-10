@@ -6,7 +6,7 @@ import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.io.Source
 
-final class SuffixRemoval {
+final class LegalFormRemoval {
     private val legalSuffixes: Set[String] = {
         Source.fromResource("legal_suffixes").getLines().toSet
     }
@@ -14,24 +14,28 @@ final class SuffixRemoval {
     private val legalSuffixAbbreviations: Map[String, String] = {
         Source.fromResource("legal_suffix_abbreviations").getLines()
             .map(line => line.split(":") match {
-                case Array(suffix, abbreviation) => (suffix, abbreviation)
+                case Array(suffix, abbreviation) => (normalize(suffix), abbreviation)
             }).toMap
     }
 
-    def removeLegalSuffixes(companyName: String): String = {
+    def removeLegalForms(companyName: String): String = {
         val cleaned = cleanCompanyName(companyName)
         val shortened = shortenLegalSuffixes(cleaned)
         shortened.split(" ").filterNot(legalSuffixes.contains).mkString(" ")
     }
 
     private def cleanCompanyName(companyName: String): String = {
-        Normalizer.normalize(companyName, Normalizer.Form.NFKD)
-            .toLowerCase
-            .replaceAll("\\p{general_category=Mn}+", "")
+        normalize(companyName)
             .replaceAll("\\.", "")
             .replaceAll("\\p{Punct}", " ")
             .replaceAll("\\s+", " ")
             .trim
+    }
+
+    private def normalize(name: String): String = {
+        Normalizer.normalize(name, Normalizer.Form.NFKD)
+            .toLowerCase
+            .replaceAll("\\p{general_category=Mn}+", "")
     }
 
     private def shortenLegalSuffixes(companyName: String): String = {
