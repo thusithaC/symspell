@@ -8,11 +8,11 @@ import scala.io.Source
 
 final class LegalFormRemoval {
     private val legalSuffixes: Set[String] = {
-        Source.fromResource("legal_suffixes").getLines().toSet
+        Source.fromResource("legal_forms").getLines().toSet
     }
 
     private val legalSuffixAbbreviations: Map[String, String] = {
-        Source.fromResource("legal_suffix_abbreviations").getLines()
+        Source.fromResource("legal_form_abbreviations").getLines()
             .map(line => line.split(":") match {
                 case Array(suffix, abbreviation) => (normalize(suffix), abbreviation)
             }).toMap
@@ -29,12 +29,12 @@ final class LegalFormRemoval {
             .replaceAll("\\.", "")
             .replaceAll("\\p{Punct}", " ")
             .replaceAll("\\s+", " ")
+            .toLowerCase
             .trim
     }
 
     private def normalize(name: String): String = {
         Normalizer.normalize(name, Normalizer.Form.NFKD)
-            .toLowerCase
             .replaceAll("\\p{general_category=Mn}+", "")
     }
 
