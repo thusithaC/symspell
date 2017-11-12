@@ -1,12 +1,12 @@
 package de.semkath.symspell.cleaning
 
-import java.text.Normalizer
-
 import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.io.Source
 
 final class LegalFormRemoval {
+    private val normalizer = new NameNormalization
+
     private val legalSuffixes: Set[String] = {
         Source.fromResource("legal_forms").getLines().toSet
     }
@@ -14,53 +14,38 @@ final class LegalFormRemoval {
     private val legalSuffixAbbreviations: Map[String, String] = {
         Source.fromResource("legal_form_abbreviations").getLines()
             .map(line => line.split(":") match {
-                case Array(suffix, abbreviation) => (normalize(suffix), abbreviation)
+                case Array(suffix, abbreviation) => (normalizer.normalize(suffix), abbreviation)
             }).toMap
     }
 
     def removeLegalForms(companyName: String): String = {
-        val cleaned = cleanCompanyName(companyName)
-        val shortened = shortenLegalSuffixes(cleaned)
+        val shortened = shortenLegalSuffixes(companyName)
         shortened.split(" ").filterNot(legalSuffixes.contains).mkString(" ")
     }
 
-    private def cleanCompanyName(companyName: String): String = {
-        normalize(companyName)
-            .replaceAll("\\.", "")
-            .replaceAll("\\p{Punct}", " ")
-            .replaceAll("\\s+", " ")
-            .toLowerCase
-            .trim
-    }
-
-    private def normalize(name: String): String = {
-        Normalizer.normalize(name, Normalizer.Form.NFKD)
-            .replaceAll("\\p{general_category=Mn}+", "")
-    }
-
     private def shortenLegalSuffixes(companyName: String): String = {
-        val queue = new mutable.Queue[(String, String, String)]()
-        queue ++= getNGrams(companyName).reverse
+        val nGrams = new mutable.Queue[(String, String, String)]()
+        nGrams ++= getNGrams(companyName).reverse
 
         @tailrec
-        def shortenLegalSuffixes(companyName: String, queue: mutable.Queue[(String, String, String)]): String = {
-            val nGram = queue.dequeue()
+        def shortenLegalSuffixes(companyName: String, nGrams: mutable.Queue[(String, String, String)]): String = {
+            val nGram = nGrams.dequeue()
             val shortenedName = List(nGram._1, legalSuffixAbbreviations.getOrElse(nGram._2, nGram._2), nGram._3).mkString(" ").trim
 
             // If the name was successfully shortened, use it to generate new NGrams
             if (shortenedName.length < companyName.length) {
-                queue.clear
-                queue ++= getNGrams(shortenedName).reverse
+                nGrams.clear
+                nGrams ++= getNGrams(shortenedName).reverse
             }
 
-            if (queue.nonEmpty) {
-                shortenLegalSuffixes(shortenedName, queue)
+            if (nGrams.nonEmpty) {
+                shortenLegalSuffixes(shortenedName, nGrams)
             } else {
                 shortenedName
             }
         }
 
-        shortenLegalSuffixes(companyName, queue)
+        shortenLegalSuffixes(companyName, nGrams)
     }
 
     private def getNGrams(companyName: String): IndexedSeq[(String, String, String)] = {
