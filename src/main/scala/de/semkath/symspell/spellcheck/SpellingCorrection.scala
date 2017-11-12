@@ -11,7 +11,9 @@ class SpellingCorrection(dictionary: SpellingDictionary) {
     def correct(word: String): String = {
         getPossibleCorrections(word)
             .map(possibleCorrection => (possibleCorrection, editDistance.distance(possibleCorrection, word)))
-            .toMap.minBy(_._2)._1
+            .toMap
+            .minBy(_._2)
+            ._1
     }
 
     private def getPossibleCorrections(word: String): Seq[String] = {
