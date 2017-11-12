@@ -37,7 +37,7 @@ object Main extends App {
     val patentNames = patentRows.map(_.head)
     */
 
-    val patentNames = List("qulacomm", "robert bosch", "simens network solutions")
+    val patentNames = List("qulacomm", "robert bosch", "simens networkin solutions")
     patentNames.foreach(name => {
         val corrected = correction.correct(name)
         println(s"$name -> $corrected")

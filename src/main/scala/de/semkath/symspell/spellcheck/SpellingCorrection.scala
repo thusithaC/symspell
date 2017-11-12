@@ -1,11 +1,20 @@
 package de.semkath.symspell.spellcheck
 
+import info.debatty.java.stringsimilarity.{JaroWinkler, NormalizedLevenshtein}
+
 import scala.collection.mutable
 
 class SpellingCorrection(dictionary: SpellingDictionary) {
     private val errors = new SpellingErrors
+    private val editDistance = new JaroWinkler
 
-    def correct(word: String): Seq[String] = {
+    def correct(word: String): String = {
+        getPossibleCorrections(word)
+            .map(possibleCorrection => (possibleCorrection, editDistance.distance(possibleCorrection, word)))
+            .toMap.minBy(_._2)._1
+    }
+
+    private def getPossibleCorrections(word: String): Seq[String] = {
         val tokenCorrections = word.split(" ")
             .map(token => {
                 val distance = token.length * 0.2f
