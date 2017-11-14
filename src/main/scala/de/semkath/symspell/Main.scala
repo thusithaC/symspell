@@ -22,7 +22,7 @@ object Main extends App {
     })
     */
 
-    val companyNames = List("qualcomm", "robert bosch", "siemens networking solutions", "nokia network")
+    val companyNames = List("qualcomm", "robert bosch b", "robert bosch a", "siemens network solutions", "siemens networking solutions")
 
     Logger.getGlobal.info("Creating dictionary")
 
@@ -37,7 +37,7 @@ object Main extends App {
     val patentNames = patentRows.map(_.head)
     */
 
-    val patentNames = List("qulacomm", "robert bosch", "simens networkin solutions")
+    val patentNames = List("qulacomm", "robert bosch b", "simens networki solutions")
     patentNames.foreach(name => {
         val corrected = correction.correct(name)
         println(s"$name -> $corrected")
