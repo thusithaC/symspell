@@ -2,7 +2,7 @@ package de.semkath.symspell.spellcheck
 
 import com.rklaehn.radixtree.RadixTree
 
-class SpellingDictionary(words: Iterable[String]) {
+class SpellingDictionary(names: Iterable[String]) {
     private val errors = new SpellingErrors
     private val _radixTree = buildRadixTree()
     private val _dictionary = buildDictionary(_radixTree)
@@ -21,7 +21,7 @@ class SpellingDictionary(words: Iterable[String]) {
     }
 
     private def buildRadixTree(): RadixTree[String, String] = {
-        val pairs = words.map(word => word -> word).toSeq
+        val pairs = names.map(word => word -> word).toSeq
         RadixTree(pairs: _*)
     }
 }

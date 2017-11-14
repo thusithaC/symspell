@@ -8,24 +8,24 @@ class SpellingCorrection(dictionary: SpellingDictionary) {
     private val errors = new SpellingErrors
     private val editDistance = new JaroWinkler
 
-    def correct(word: String): Seq[String] = {
-            getBestCorrection(word)
+    def correct(name: String): Seq[String] = {
+            getBestCorrection(name)
             .map(correction => dictionary.radixTree.filterPrefix(correction).values.toList)
             .getOrElse(List.empty)
     }
 
-    def getBestCorrection(word: String): Option[String] = {
-        val possibleCorrections = getPossibleCorrections(word)
+    def getBestCorrection(name: String): Option[String] = {
+        val possibleCorrections = getPossibleCorrections(name)
 
         possibleCorrections.headOption.map(_ => {
-            possibleCorrections.map(possibleCorrection => possibleCorrection -> editDistance.distance(possibleCorrection, word))
+            possibleCorrections.map(possibleCorrection => possibleCorrection -> editDistance.distance(possibleCorrection, name))
                 .minBy { case (a, b) => b }
                 ._1
         })
     }
 
-    private def getPossibleCorrections(word: String): Set[String] = {
-        word.split(" ")
+    private def getPossibleCorrections(name: String): Set[String] = {
+        name.split(" ")
             .map(token => {
                 val distance = token.length * 0.2f
                 val deletions = errors.generateDeletions(token, distance.toInt)
